@@ -2,12 +2,12 @@
   "compilerOptions": {
     /* Basic options */
     "target": "ES2022",
-    "module": "NodeNext",
+    "module": "esnext",
     "lib": [
       "ES2022",
       "ESNext.Decorators"
     ],
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "node",
     "esModuleInterop": true, // allow default imports from CJS
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true, // speed up compilation
