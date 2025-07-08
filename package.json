@@ -20,7 +20,8 @@
     "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
     "build": "tsc",
     "start": "node dist/main.js",
-    "dev": "tsx watch src/main.ts"
+    "dev": "tsx watch src/main.ts",
+    "postinstall": "node ./scripts/postinstall.js"
   },
   "devDependencies": {
     "@types/convict": "^6.1.6",
