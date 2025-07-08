@@ -1,0 +1,73 @@
+{
+  "compilerOptions": {
+    /* Basic options */
+    "target": "ES2022",
+    "module": "NodeNext",
+    "lib": [
+      "ES2022",
+      "ESNext.Decorators"
+    ],
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true, // allow default imports from CJS
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true, // speed up compilation
+    /* Strictness options */
+    "strict": true, // all strict mode options → true
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    /* Decorator support (for TypeORM entities) */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    /* Output options */
+    "rootDir": "src",
+    "outDir": "dist",
+    "removeComments": true,
+    "sourceMap": true,
+    /* Project structure */
+    "baseUrl": "./src", // for absolute imports
+    "paths": {
+      "@api/*": [
+        "api/*"
+      ],
+      "@core/*": [
+        "core/*"
+      ],
+      "@db/*": [
+        "database/*"
+      ],
+      "@services/*": [
+        "services/*"
+      ],
+      "@config": [
+        "config/config.ts"
+      ],
+      "@repositories": [
+        "repositories"
+      ],
+      "@repositories/*": [
+        "repositories/*"
+      ],
+      "@dtos/*": [
+        "dtos/*"
+      ],
+      "@utils/*": [
+        "utils/*"
+      ]
+    },
+    /* JSON and resolution */
+    "resolveJsonModule": true, // import `.json` configs
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests/**/*.ts"
+  ]
+}
