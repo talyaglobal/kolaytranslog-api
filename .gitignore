@@ -8,3 +8,6 @@
 !.env.example
 
 /src/generated/prisma
+
+/logs/*.log
+/logs/*.json

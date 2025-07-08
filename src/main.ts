@@ -4,10 +4,10 @@ import app from './app';
 import pino from 'pino';
 import * as dotenv from 'dotenv';
 import path from 'path';
+import logger from '@utils/logger';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
-const logger = pino({ level: process.env.LOG_LEVEL });
 const port = parseInt(process.env.PORT || '3000');
 
 const server = app.listen(port, () => {
