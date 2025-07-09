@@ -1,4 +1,5 @@
 import { ApplicationRepository, ContactMessageRepository, CountryRepository, PassengerRepository, PaymentDisputeRepository, VesselRepository, WebhookEventRepository } from '@repositories';
+import { ApplicationService, SupabaseService } from '@services';
 import { container } from 'tsyringe';
 
 container.register<ApplicationRepository>('ApplicationRepository', {
@@ -21,6 +22,14 @@ container.register<VesselRepository>('VesselRepository', {
 });
 container.register<WebhookEventRepository>('WebhookEventRepository', {
   useClass: WebhookEventRepository,
+});
+
+container.register<ApplicationService>('ApplicationService', {
+  useClass: ApplicationService,
+});
+
+container.register<SupabaseService>('SupabaseService', {
+  useClass: SupabaseService,
 });
 
 export default container;

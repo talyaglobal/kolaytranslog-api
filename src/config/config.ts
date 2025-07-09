@@ -97,6 +97,36 @@ const config = convict({
       default: 'info',
       env: 'LOG_LEVEL'
     }
+  },
+
+  supabase: {
+    url: {
+      doc: 'Supabase URL',
+      format: String,
+      default: '',
+      env: 'SUPABASE_URL'
+    },
+    anonKey: {
+      doc: 'Supabase Anonymous Key',
+      format: String,
+      default: '',
+      env: 'SUPABASE_ANON_KEY'
+    },
+    serviceRoleKey: {
+      doc: 'Supabase Service Role Key',
+      format: String,
+      default: '',
+      env: 'SUPABASE_SERVICE_ROLE_KEY',
+      sensitive: true
+    },
+    storage: {
+      bucketName: {
+        doc: 'Supabase Storage Bucket Name',
+        format: String,
+        default: 'uploads',
+        env: 'SUPABASE_STORAGE_BUCKET'
+      }
+    }
   }
 });
 

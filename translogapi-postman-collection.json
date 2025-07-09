@@ -1,0 +1,108 @@
+{
+  "info": {
+    "name": "TranslogAPI Collection",
+    "description": "API collection for testing the TranslogAPI application endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{BASE_URL}}/health",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "description": "Check if the API is running"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Application",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"vessel\": \"Sea Explorer\",\n  \"owner\": \"John Doe\",\n  \"amount\": 15000,\n  \"captainNationality\": \"Turkey\",\n  \"captainPassport\": \"TR1234567\",\n  \"purpose\": \"Tourism and leisure sailing\",\n  \"contactPhone\": \"+90 555 123 4567\",\n  \"contactEmail\": \"john.doe@example.com\",\n  \"details\": {\n    \"vesselLength\": \"12.5\",\n    \"entryPort\": \"Bodrum\",\n    \"exitPort\": \"Marmaris\",\n    \"type\": \"yelkenli\",\n    \"flag\": \"Turkey\",\n    \"registrationNumber\": \"TR-BOD-2023-001\",\n    \"entryDate\": \"2024-06-15\",\n    \"exitDate\": \"2024-06-25\"\n  },\n  \"passengers\": [\n    {\n      \"firstName\": \"Jane\",\n      \"lastName\": \"Smith\",\n      \"nationality\": \"United States\",\n      \"passportNumber\": \"US987654321\",\n      \"passportExpiry\": \"2028-12-31\",\n      \"birthDate\": \"1985-03-15\",\n      \"birthPlace\": \"New York\",\n      \"gender\": \"female\",\n      \"passportScan\": {\n        \"filename\": \"jane_passport.pdf\",\n        \"mimetype\": \"application/pdf\",\n        \"size\": 1024000,\n        \"data\": \"JVBERi0xLjQKJcOkw7zDtsO4w6A=\"\n      }\n    },\n    {\n      \"firstName\": \"Mike\",\n      \"lastName\": \"Johnson\",\n      \"nationality\": \"Canada\",\n      \"passportNumber\": \"CA123456789\",\n      \"passportExpiry\": \"2027-08-20\",\n      \"birthDate\": \"1990-07-22\",\n      \"birthPlace\": \"Toronto\",\n      \"gender\": \"male\",\n      \"passportScan\": {\n        \"filename\": \"mike_passport.jpg\",\n        \"mimetype\": \"image/jpeg\",\n        \"size\": 850000,\n        \"data\": \"/9j/4AAQSkZJRgABAQEAYABgAAD=\"\n      }\n    }\n  ],\n  \"captainPassportScan\": {\n    \"filename\": \"captain_passport.pdf\",\n    \"mimetype\": \"application/pdf\",\n    \"size\": 1200000,\n    \"data\": \"JVBERi0xLjQKJcOkw7zDtsO4w6BcL1JlZg==\"\n  },\n  \"insurancePolicy\": {\n    \"filename\": \"insurance_policy.pdf\",\n    \"mimetype\": \"application/pdf\",\n    \"size\": 2048000,\n    \"data\": \"JVBERi0xLjQKJcOkw7zDtsO4w6DDpMO8w7bDuMOgXC9JbnN1cmFuY2U=\"\n  },\n  \"vesselRegistration\": {\n    \"filename\": \"vessel_registration.pdf\",\n    \"mimetype\": \"application/pdf\",\n    \"size\": 1536000,\n    \"data\": \"JVBERi0xLjQKJcOkw7zDtsO4w6DDpMO8w7bDuMOgXC9WZXNzZWw=\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/applications",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "applications"
+          ]
+        },
+        "description": "Create a new application with vessel, owner, and passenger information"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:3000",
+      "description": "Base URL for the API"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set default values",
+          "if (!pm.environment.get('BASE_URL')) {",
+          "    pm.environment.set('BASE_URL', 'http://localhost:3000');",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Basic response validation",
+          "pm.test('Status code is success', function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+          "});",
+          "",
+          "pm.test('Response has correct content type', function () {",
+          "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+          "});",
+          "",
+          "// Test for successful responses",
+          "if (pm.response.code < 400) {",
+          "    pm.test('Response has success status', function () {",
+          "        const responseJson = pm.response.json();",
+          "        pm.expect(responseJson.status).to.eql('success');",
+          "    });",
+          "}",
+          "",
+          "// Test for error responses",
+          "if (pm.response.code >= 400) {",
+          "    pm.test('Response has error status', function () {",
+          "        const responseJson = pm.response.json();",
+          "        pm.expect(responseJson.status).to.eql('error');",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ]
+}

@@ -1,12 +1,6 @@
 import * as z from "zod"
-import { dateSchema, fileUploadSchema, passengerSchema } from '@dtos';
+import { dateSchema, fileUploadSchema, passengerSchema, countrySchema } from '@dtos';
 import { VesselType } from '@types';
-
-export const countrySchema = z
-  .string()
-  .min(2, "Ülke adı en az 2 karakter olmalıdır")
-  .max(100, "Ülke adı en fazla 100 karakter olabilir")
-  .regex(/^[a-zA-ZçğıöşüÇĞIİÖŞÜ\s\-.'()]+$/, "Geçerli bir ülke adı giriniz")
 
 export const newApplicationSchema = z
   .object({

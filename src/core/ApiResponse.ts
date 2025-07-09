@@ -1,4 +1,4 @@
-import HttpStatusCode from './HttpStatus';
+import { HttpStatusCode } from './HttpStatus';
 
 export interface ApiResponse<T = null> {
 	status: "success" | "error";
