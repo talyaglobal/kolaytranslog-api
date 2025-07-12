@@ -10,6 +10,7 @@ import { errorHandler } from '@api/middlewares/error-handler';
 import { notFoundHandler } from '@api/middlewares/not-found';
 import pino from 'pino';
 import { config } from '@config';
+import { fa } from 'zod/v4/locales';
 
 const logger = pino({ level: config.get('log.level') });
 
@@ -42,6 +43,10 @@ app.use(
   rateLimit({
     windowMs: config.get('rateLimit.windowMs'),
     max: config.get('rateLimit.maxRequests'),
+    validate: {
+      trustProxy: false,
+      xForwardedForHeader: false,
+    }
   })
 );
 
