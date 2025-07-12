@@ -30,15 +30,20 @@ export class BaseRepository<T, C, U> {
     cursor?: any;
     where?: any;
     orderBy?: any;
+    include?: any;
   }): Promise<T[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-    return this.model.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-    });
+    const { skip, take, cursor, where, orderBy, include } = params;
+    
+    const queryOptions: any = {};
+    
+    if (skip !== undefined) queryOptions.skip = skip;
+    if (take !== undefined) queryOptions.take = take;
+    if (cursor !== undefined) queryOptions.cursor = cursor;
+    if (where !== undefined) queryOptions.where = where;
+    if (orderBy !== undefined) queryOptions.orderBy = orderBy;
+    if (include !== undefined) queryOptions.include = include;
+    
+    return this.model.findMany(queryOptions);
   }
 
   async count(where?: any): Promise<number> {

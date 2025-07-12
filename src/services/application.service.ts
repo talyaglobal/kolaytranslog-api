@@ -95,7 +95,7 @@ export class ApplicationService {
       const { page, limit, sortBy, sortOrder, ...searchFilters } = filters;
       
       // Calculate pagination
-      const skip = (page - 1) * limit;
+      const skip = (page - 1) * limit || 0;
       
       // Build where clause for filtering
       const where: Prisma.applicationsWhereInput = {};
@@ -193,17 +193,34 @@ export class ApplicationService {
         case 'captain_name':
           orderBy.captain_name = sortOrder;
           break;
+        case 'created_at':
+          orderBy.created_at = sortOrder;
+          break;
+        case 'departure_date':
+          orderBy.departure_date = sortOrder;
+          break;
+        case 'arrival_date':
+          orderBy.arrival_date = sortOrder;
+          break;
         default:
-          orderBy[sortBy] = sortOrder;
+          orderBy.created_at = sortOrder;
       }
       
-      // Get applications with pagination and filtering
-      const applications = await this.applicationRepository.findAll({
+      // Build query parameters
+      const queryParams: any = {
         skip,
         take: limit,
         where,
         orderBy,
-      });
+      };
+      
+      // Include vessels if we're filtering by vessel properties or sorting by vessel fields
+      if (searchFilters.vesselType || searchFilters.vesselName || sortBy === 'vessel_name') {
+        queryParams.include = { vessels: true };
+      }
+      
+      // Get applications with pagination and filtering
+      const applications = await this.applicationRepository.findAll(queryParams).catch(err => console.log(err));
       
       // Get total count for pagination info
       const totalCount = await this.applicationRepository.count(where);

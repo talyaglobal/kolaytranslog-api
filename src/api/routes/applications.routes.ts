@@ -33,7 +33,7 @@ router.post(
   asyncHandler(applicationController.create.bind(applicationController))
 );
 
-router.post(
+router.get(
   '/:id',
   asyncHandler(applicationController.getById.bind(applicationController))
 );
