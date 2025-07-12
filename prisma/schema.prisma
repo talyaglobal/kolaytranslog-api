@@ -27,9 +27,14 @@ model applications {
   notes                 String?
   contact_email         String       @db.VarChar(255)
   contact_phone         String?      @db.VarChar(50)
-  insurance_policy      String
-  vessel_registration   String
-  captain_passport_scan String
+  address               String?
+  company_name          String?      @db.VarChar(255)
+  document_urls         String[]     @default([])
+  emergency_contact     String?      @db.VarChar(255)
+  insurance_information String?
+  passenger_count       Int?         @default(0)
+  previous_visits       Boolean?     @default(false)
+  special_requests      String?
   vessels               vessels      @relation(fields: [vessel_id], references: [id], onUpdate: NoAction)
   passengers            passengers[]
 
@@ -120,6 +125,9 @@ model vessels {
   length              Decimal          @db.Decimal(10, 2)
   flag                String           @db.VarChar(100)
   registration_number String           @unique @db.VarChar(50)
+  engine_power        String?          @db.VarChar(100)
+  hull_material       String?          @db.VarChar(100)
+  manufacturing_year  Int?
   applications        applications[]
 
   @@index([registration_number], map: "idx_vessels_registration")
@@ -146,6 +154,14 @@ model webhook_events {
   @@index([event_type], map: "idx_webhook_events_event_type")
   @@index([gateway], map: "idx_webhook_events_gateway")
   @@index([processed], map: "idx_webhook_events_processed")
+}
+
+model yapimyili {
+  year       Int       @id
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+
+  @@index([year(sort: Desc)], map: "idx_yapim_yili_year")
 }
 
 enum vessel_type_enum {

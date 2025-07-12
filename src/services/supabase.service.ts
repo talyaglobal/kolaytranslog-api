@@ -3,6 +3,7 @@ import { injectable } from 'tsyringe';
 import { AppError } from '@core/AppError';
 import { HttpStatusCode } from '@core/HttpStatus';
 import logger from '@utils/logger';
+import { config } from '@config';
 
 export interface FileUploadResult {
   filename: string;
@@ -16,9 +17,9 @@ export class SupabaseService {
   private bucketName: string;
 
   constructor() {
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    this.bucketName = process.env.SUPABASE_STORAGE_BUCKET || "uploads";
+    const supabaseUrl = config.get('supabase.url');
+    const supabaseKey = config.get('supabase.serviceRoleKey');
+    this.bucketName = config.get('supabase.storage.bucketName');
 
     if (!supabaseUrl || !supabaseKey) {
       throw new AppError(

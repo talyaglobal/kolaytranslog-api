@@ -3,27 +3,39 @@ import { container } from 'tsyringe';
 import { ApplicationController } from '@api/controllers/application.controller';
 import { validate } from '@api/middlewares/validation';
 import { newApplicationSchema } from '@dtos/new-application.dto';
+import { getApplicationsSchema } from '@dtos/get-applications.dto';
 import * as z from 'zod';
+import asyncHandler from 'express-async-handler';
 
 const router = Router();
 
 // Get controller instance from DI container
 const applicationController: ApplicationController = container.resolve(ApplicationController);
 
-// Create validation schema for the request body
+// Create validation schemas
 const createApplicationValidation = z.object({
   body: newApplicationSchema,
 });
 
-/**
- * @route   POST /applications
- * @desc    Create a new application
- * @access  Public
- */
+const getApplicationsValidation = z.object({
+  query: getApplicationsSchema,
+});
+
+router.get(
+  '/',
+  validate(getApplicationsValidation),
+  asyncHandler(applicationController.getAll.bind(applicationController))
+);
+
 router.post(
   '/',
   validate(createApplicationValidation),
-  applicationController.create
+  asyncHandler(applicationController.create.bind(applicationController))
+);
+
+router.post(
+  '/:id',
+  asyncHandler(applicationController.getById.bind(applicationController))
 );
 
 export default router;

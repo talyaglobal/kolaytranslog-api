@@ -9,21 +9,22 @@ import { registerRoutes } from '@api/routes';
 import { errorHandler } from '@api/middlewares/error-handler';
 import { notFoundHandler } from '@api/middlewares/not-found';
 import pino from 'pino';
+import { config } from '@config';
 
-const logger = pino({ level: process.env.LOG_LEVEL });
+const logger = pino({ level: config.get('log.level') });
 
 // Load Swagger document
-const swaggerDocument = YAML.load(process.env.SWAGGER_PATH || '');
+const swaggerDocument = YAML.load(config.get('swagger.path'));
 
 const app: Application = express();
 
 // Security
 app.use(helmet());
-app.use(cors({ origin: process.env.CORS_ORIGINS }));
+app.use(cors({ origin: config.get('cors.origins') }));
 app.use(
   rateLimit({
-    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'),
-    max: parseInt(process.env.RATE_LIMIT_MAX || '100'),
+    windowMs: config.get('rateLimit.windowMs'),
+    max: config.get('rateLimit.maxRequests'),
   })
 );
 

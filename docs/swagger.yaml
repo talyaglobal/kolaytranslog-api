@@ -1,1 +1,962 @@
-test
+openapi: 3.0.3
+info:
+  title: TransLog API
+  description: API for managing maritime vessel transit log applications
+  version: 1.0.0
+  contact:
+    name: API Support
+    url: https://github.com/talyaglobal/kolaytranslog-api
+    email: support@example.com
+  license:
+    name: ISC
+    url: https://opensource.org/licenses/ISC
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://api.translog.com
+    description: Production server
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Applications
+    description: Transit log application management
+  - name: Countries
+    description: Country data management
+  - name: Webhooks
+    description: External webhook endpoints
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Check if the API is running and healthy
+      tags:
+        - Health
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "UP"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2024-01-01T12:00:00.000Z"
+
+  /applications:
+    get:
+      summary: Get all applications with filtering and pagination
+      description: Retrieve a list of transit log applications with various filter options and pagination
+      tags:
+        - Applications
+      parameters:
+        - name: page
+          in: query
+          description: Page number (starts from 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page (max 100)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: vesselType
+          in: query
+          description: Filter by vessel type
+          schema:
+            $ref: '#/components/schemas/VesselType'
+        - name: status
+          in: query
+          description: Filter by application status
+          schema:
+            type: string
+            enum: [pending, approved, rejected]
+        - name: captainNationality
+          in: query
+          description: Filter by captain nationality (partial match)
+          schema:
+            type: string
+        - name: departurePort
+          in: query
+          description: Filter by departure port (partial match)
+          schema:
+            type: string
+        - name: arrivalPort
+          in: query
+          description: Filter by arrival port (partial match)
+          schema:
+            type: string
+        - name: purposeKeyword
+          in: query
+          description: Filter by purpose keyword (partial match)
+          schema:
+            type: string
+        - name: vesselName
+          in: query
+          description: Filter by vessel name (partial match)
+          schema:
+            type: string
+        - name: departureDateFrom
+          in: query
+          description: Filter by departure date from (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: departureDateTo
+          in: query
+          description: Filter by departure date to (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: arrivalDateFrom
+          in: query
+          description: Filter by arrival date from (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: arrivalDateTo
+          in: query
+          description: Filter by arrival date to (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: createdDateFrom
+          in: query
+          description: Filter by creation date from (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: createdDateTo
+          in: query
+          description: Filter by creation date to (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: sortBy
+          in: query
+          description: Sort applications by field
+          schema:
+            type: string
+            enum: [created_at, departure_date, arrival_date, vessel_name, captain_name]
+            default: created_at
+        - name: sortOrder
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Applications retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Applications retrieved successfully."
+                  data:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Application'
+                      pagination:
+                        type: object
+                        properties:
+                          page:
+                            type: integer
+                            example: 1
+                          limit:
+                            type: integer
+                            example: 10
+                          totalCount:
+                            type: integer
+                            example: 25
+                          totalPages:
+                            type: integer
+                            example: 3
+                          hasNextPage:
+                            type: boolean
+                            example: true
+                          hasPreviousPage:
+                            type: boolean
+                            example: false
+        '400':
+          description: Bad request - validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Create a new transit log application
+      description: Submit a new application for vessel transit logging. Documents can be uploaded as a general array without specific labels.
+      tags:
+        - Applications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewApplicationRequest'
+      responses:
+        '201':
+          description: Application created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request - validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /applications/{id}:
+    get:
+      summary: Get application by ID
+      description: Retrieve a specific application by its ID
+      tags:
+        - Applications
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Application ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Application retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/Application'
+        '404':
+          description: Application not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /countries:
+    get:
+      summary: Get all countries
+      description: Retrieve a list of all available countries
+      tags:
+        - Countries
+      responses:
+        '200':
+          description: Countries retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Country'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /webhooks/stripe:
+    post:
+      summary: Stripe webhook handler
+      description: Handle Stripe webhook events for payment processing
+      tags:
+        - Webhooks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Stripe webhook payload
+      responses:
+        '200':
+          description: Webhook processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+                    example: true
+        '400':
+          description: Invalid webhook signature or payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Country:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique country ID
+          example: 1
+        name:
+          type: string
+          description: Country name
+          example: "Turkey"
+        iso_code_alpha2:
+          type: string
+          description: ISO 3166-1 alpha-2 country code
+          example: "TR"
+        iso_code_alpha3:
+          type: string
+          description: ISO 3166-1 alpha-3 country code
+          example: "TUR"
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: "2024-01-01T12:00:00.000Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: "2024-01-01T12:00:00.000Z"
+
+
+    ApiResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [success, error]
+          example: "success"
+        statusCode:
+          type: integer
+          example: 201
+        message:
+          type: string
+          example: "Application created successfully."
+        data:
+          $ref: '#/components/schemas/Application'
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [error]
+          example: "error"
+        statusCode:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "Validation failed"
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: "vessel"
+              message:
+                type: string
+                example: "Tekne adı gereklidir"
+
+    NewApplicationRequest:
+      type: object
+      required:
+        - vesselName
+        - vesselType
+        - vesselLength
+        - flagCountry
+        - firstName
+        - lastName
+        - email
+        - nationality
+        - entryPort
+        - exitPort
+        - entryDate
+        - exitDate
+        - tripPurpose
+      properties:
+        # Vessel Information
+        vesselName:
+          type: string
+          minLength: 2
+          description: Vessel name
+          example: "Sea Explorer"
+        vesselType:
+          $ref: '#/components/schemas/VesselType'
+        vesselLength:
+          type: number
+          minimum: 0.1
+          description: Vessel length in meters
+          example: 15.5
+        flagCountry:
+          type: string
+          minLength: 2
+          maxLength: 100
+          pattern: '^[a-zA-ZçğıöşüÇĞIİÖŞÜ\s\-.\''()]+$'
+          description: Flag country
+          example: "Turkish"
+        vesselRegistrationNumber:
+          type: string
+          description: Vessel registration number (optional)
+          example: "TR-12345"
+        manufacturingYear:
+          type: integer
+          minimum: 1900
+          maximum: 2024
+          description: Manufacturing year (optional)
+          example: 2020
+        enginePower:
+          type: string
+          description: Engine power in HP (optional)
+          example: "300 HP"
+        hullMaterial:
+          type: string
+          description: Hull material (optional)
+          example: "Fiberglass"
+        
+        # Owner Information
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: '^[A-Za-z\s]+$'
+          description: Owner first name
+          example: "John"
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: '^[A-Za-z\s]+$'
+          description: Owner last name
+          example: "Doe"
+        email:
+          type: string
+          format: email
+          description: Owner email
+          example: "john.doe@example.com"
+        nationality:
+          type: string
+          minLength: 2
+          maxLength: 100
+          pattern: '^[a-zA-ZçğıöşüÇĞIİÖŞÜ\s\-.\''()]+$'
+          description: Owner nationality
+          example: "Turkish"
+        companyName:
+          type: string
+          description: Company name (optional)
+          example: "Doe Marine Services"
+        passportNumber:
+          type: string
+          description: Passport number (optional)
+          example: "A1234567"
+        phoneNumber:
+          type: string
+          pattern: '^[\+]?[1-9][\d]{0,15}$'
+          description: Phone number (optional)
+          example: "+905551234567"
+        address:
+          type: string
+          description: Address (optional)
+          example: "123 Marina Street, Bodrum, Turkey"
+        
+        # Trip Information
+        entryPort:
+          type: string
+          minLength: 1
+          description: Entry port
+          example: "Bodrum"
+        exitPort:
+          type: string
+          minLength: 1
+          description: Exit port
+          example: "Marmaris"
+        entryDate:
+          type: string
+          format: date
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: Entry date (YYYY-MM-DD, must be future date)
+          example: "2024-06-15"
+        exitDate:
+          type: string
+          format: date
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: Exit date (YYYY-MM-DD, must be after entry date)
+          example: "2024-06-20"
+        tripPurpose:
+          type: string
+          minLength: 2
+          description: Trip purpose
+          example: "Tourism"
+        crewCount:
+          type: integer
+          minimum: 0
+          description: Number of crew members (optional)
+          example: 2
+        passengerCount:
+          type: integer
+          minimum: 0
+          description: Number of passengers (optional)
+          example: 4
+        emergencyContact:
+          type: string
+          description: Emergency contact information (optional)
+          example: "Emergency Contact: +905551234568"
+        specialRequests:
+          type: string
+          description: Special requests (optional)
+          example: "Wheelchair accessible dock needed"
+        insuranceInformation:
+          type: string
+          description: Insurance information (optional)
+          example: "Comprehensive marine insurance, Policy #123456"
+        previousVisits:
+          type: boolean
+          description: Has visited before (optional)
+          example: false
+        
+        # Documents
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileUpload'
+          description: General application document uploads (optional) - files will be stored without specific labels
+          example: []
+
+    VesselDetails:
+      type: object
+      required:
+        - vesselLength
+        - entryPort
+        - exitPort
+        - type
+        - flag
+        - registrationNumber
+        - entryDate
+        - exitDate
+      properties:
+        vesselLength:
+          type: string
+          minLength: 1
+          description: Vessel length
+          example: "15.5m"
+        entryPort:
+          type: string
+          minLength: 1
+          description: Entry port
+          example: "Bodrum"
+        exitPort:
+          type: string
+          minLength: 1
+          description: Exit port
+          example: "Marmaris"
+        type:
+          $ref: '#/components/schemas/VesselType'
+        flag:
+          type: string
+          minLength: 2
+          maxLength: 100
+          pattern: '^[a-zA-ZçğıöşüÇĞIİÖŞÜ\s\-.\''()]+$'
+          description: Vessel flag country
+          example: "Turkish"
+        registrationNumber:
+          type: string
+          minLength: 2
+          description: Vessel registration number
+          example: "TR-12345"
+        entryDate:
+          type: string
+          format: date
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: Entry date (YYYY-MM-DD)
+          example: "2024-06-15"
+        exitDate:
+          type: string
+          format: date
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: Exit date (YYYY-MM-DD)
+          example: "2024-06-20"
+
+    VesselType:
+      type: string
+      enum:
+        - yelkenli
+        - motorlu
+        - katamaran
+        - yat
+        - diğer
+      description: Type of vessel
+      example: "motorlu"
+
+    Passenger:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - nationality
+        - passportNumber
+        - passportExpiry
+        - birthDate
+        - birthPlace
+        - gender
+      properties:
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: '^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$'
+          description: Passenger first name
+          example: "Ali"
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: '^[a-zA-ZğüşıöçĞÜŞİÖÇ\s\-\'']+$'
+          description: Passenger last name
+          example: "Yılmaz"
+        nationality:
+          type: string
+          minLength: 2
+          maxLength: 100
+          pattern: '^[a-zA-ZçğıöşüÇĞIİÖŞÜ\s\-.\''()]+$'
+          description: Passenger nationality
+          example: "Turkish"
+        passportNumber:
+          type: string
+          minLength: 6
+          maxLength: 20
+          pattern: '^[A-Z0-9]+$'
+          description: Passenger passport number
+          example: "B9876543"
+        passportExpiry:
+          type: string
+          format: date
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: Passport expiry date (YYYY-MM-DD)
+          example: "2026-12-31"
+        birthDate:
+          type: string
+          format: date
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: Birth date (YYYY-MM-DD)
+          example: "1990-05-15"
+        birthPlace:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Birth place
+          example: "Istanbul"
+        gender:
+          type: string
+          enum: [male, female]
+          description: Gender
+          example: "male"
+        passportScan:
+          $ref: '#/components/schemas/FileUpload'
+
+    FileUpload:
+      type: object
+      required:
+        - filename
+        - mimetype
+        - size
+        - data
+      properties:
+        filename:
+          type: string
+          minLength: 1
+          description: File name
+          example: "passport.pdf"
+        mimetype:
+          type: string
+          enum:
+            - application/pdf
+            - image/jpeg
+            - image/jpg
+            - image/png
+          description: File MIME type
+          example: "application/pdf"
+        size:
+          type: integer
+          maximum: 10485760
+          description: File size in bytes (max 10MB)
+          example: 1024000
+        data:
+          type: string
+          minLength: 1
+          description: Base64 encoded file data
+          example: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+
+    Application:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique application ID
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: "2024-01-01T12:00:00.000Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: "2024-01-01T12:00:00.000Z"
+        vessel_id:
+          type: string
+          format: uuid
+          description: Associated vessel ID
+          example: "550e8400-e29b-41d4-a716-446655440001"
+        captain_name:
+          type: string
+          description: Captain name
+          example: "John Doe"
+        captain_nationality:
+          type: string
+          description: Captain nationality
+          example: "Turkish"
+        captain_passport:
+          type: string
+          description: Captain passport number
+          example: "A1234567"
+        departure_port:
+          type: string
+          description: Departure port
+          example: "Bodrum"
+        arrival_port:
+          type: string
+          description: Arrival port
+          example: "Marmaris"
+        departure_date:
+          type: string
+          format: date
+          description: Departure date
+          example: "2024-06-15"
+        arrival_date:
+          type: string
+          format: date
+          description: Arrival date
+          example: "2024-06-20"
+        crew_count:
+          type: integer
+          description: Number of crew members
+          example: 2
+        passenger_count:
+          type: integer
+          description: Number of passengers
+          example: 4
+        company_name:
+          type: string
+          description: Company name
+          example: "Doe Marine Services"
+        address:
+          type: string
+          description: Address
+          example: "123 Marina Street, Bodrum, Turkey"
+        emergency_contact:
+          type: string
+          description: Emergency contact information
+          example: "Emergency Contact: +905551234568"
+        special_requests:
+          type: string
+          description: Special requests
+          example: "Wheelchair accessible dock needed"
+        insurance_information:
+          type: string
+          description: Insurance information
+          example: "Comprehensive marine insurance, Policy #123456"
+        previous_visits:
+          type: boolean
+          description: Has visited before
+          example: false
+        document_urls:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: Array of uploaded document URLs
+          example: ["https://storage.supabase.co/bucket/documents/file1.pdf", "https://storage.supabase.co/bucket/documents/file2.jpg"]
+        purpose:
+          type: string
+          description: Purpose of the trip
+          example: "Tourism"
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+          description: Application status
+          example: "pending"
+        notes:
+          type: string
+          description: Additional notes
+          example: "Special requirements noted"
+        contact_email:
+          type: string
+          format: email
+          description: Contact email
+          example: "captain@example.com"
+        contact_phone:
+          type: string
+          description: Contact phone number
+          example: "+905551234567"
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PassengerRecord'
+          description: List of passengers
+
+    PassengerRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique passenger ID
+          example: "550e8400-e29b-41d4-a716-446655440002"
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: "2024-01-01T12:00:00.000Z"
+        application_id:
+          type: string
+          format: uuid
+          description: Associated application ID
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          description: Passenger first name
+          example: "Ali"
+        surname:
+          type: string
+          description: Passenger last name
+          example: "Yılmaz"
+        nationality:
+          type: string
+          description: Passenger nationality
+          example: "Turkish"
+        passport_number:
+          type: string
+          description: Passenger passport number
+          example: "B9876543"
+        passport_expiration:
+          type: string
+          format: date
+          description: Passport expiration date
+          example: "2026-12-31"
+        date_of_birth:
+          type: string
+          format: date
+          description: Birth date
+          example: "1990-05-15"
+        city_of_birth:
+          type: string
+          description: Birth city
+          example: "Istanbul"
+        gender:
+          type: string
+          enum: [male, female]
+          description: Gender
+          example: "male"
+        notes:
+          type: string
+          description: Additional notes
+          example: "Special dietary requirements"
+        passport_scan_filename:
+          type: string
+          description: Passport scan filename
+          example: "passport_b9876543.pdf"
+        passport_scan_url:
+          type: string
+          description: Passport scan URL
+          example: "https://storage.supabase.co/bucket/passenger-passport/file.pdf"
+        passport_scan_uploaded_at:
+          type: string
+          format: date-time
+          description: Passport scan upload timestamp
+          example: "2024-01-01T12:00:00.000Z"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Authorization header using the Bearer scheme
+
+security:
+  - bearerAuth: []

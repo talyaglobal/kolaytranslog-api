@@ -5,10 +5,12 @@ import pino from 'pino';
 import * as dotenv from 'dotenv';
 import path from 'path';
 import logger from '@utils/logger';
+import { config } from '@config';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
-const port = parseInt(process.env.PORT || '3000');
+console.log(config.get('app.port'));
+const port = config.get('app.port');
 
 const server = app.listen(port, () => {
   logger.info(`Server listening on port ${port}`);

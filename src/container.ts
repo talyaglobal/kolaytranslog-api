@@ -1,5 +1,8 @@
 import { ApplicationRepository, ContactMessageRepository, CountryRepository, PassengerRepository, PaymentDisputeRepository, VesselRepository, WebhookEventRepository } from '@repositories';
 import { ApplicationService, SupabaseService } from '@services';
+import { CountriesService } from '@services/countries.service';
+import { EmailService } from '@services/email.service';
+import { CountriesController } from '@api/controllers/countries.controller';
 import { container } from 'tsyringe';
 
 container.register<ApplicationRepository>('ApplicationRepository', {
@@ -30,6 +33,18 @@ container.register<ApplicationService>('ApplicationService', {
 
 container.register<SupabaseService>('SupabaseService', {
   useClass: SupabaseService,
+});
+
+container.register<CountriesService>('CountriesService', {
+  useClass: CountriesService,
+});
+
+container.register<EmailService>('EmailService', {
+  useClass: EmailService,
+});
+
+container.register<CountriesController>('CountriesController', {
+  useClass: CountriesController,
 });
 
 export default container;

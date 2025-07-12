@@ -36,4 +36,8 @@ export class BaseRepository<T, C, U> {
       orderBy,
     });
   }
+
+  async count(where?: any): Promise<number> {
+    return this.model.count({ where });
+  }
 }

@@ -1,6 +1,10 @@
 import path from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import convict from 'convict';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // 1. Load .env into process.env
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
@@ -24,36 +28,10 @@ const config = convict({
   },
 
   db: {
-    host: {
-      doc: 'Database host name/IP',
-      format: String,
-      default: 'localhost',
-      env: 'DB_HOST'
-    },
-    port: {
-      doc: 'Database port',
-      format: 'port',
-      default: 5432,
-      env: 'DB_PORT'
-    },
-    user: {
-      doc: 'Database user',
-      format: String,
-      default: 'postgres',
-      env: 'DB_USER'
-    },
-    password: {
-      doc: 'Database password',
-      format: String,
-      default: '',
-      env: 'DB_PASS',
-      sensitive: true
-    },
-    name: {
-      doc: 'Database name',
-      format: String,
-      default: 'appdb',
-      env: 'DB_NAME'
+    url: {
+      doc: 'Database connection url',
+      format: 'url',
+      env: 'DATABASE_URL'
     }
   },
 
@@ -125,6 +103,73 @@ const config = convict({
         format: String,
         default: 'uploads',
         env: 'SUPABASE_STORAGE_BUCKET'
+      }
+    }
+  },
+
+  stripe: {
+    secretKey: {
+      doc: 'Stripe secret key',
+      format: String,
+      default: '',
+      env: 'STRIPE_SECRET_KEY',
+      sensitive: true,
+    },
+    webhookSecret: {
+      doc: 'Stripe webhook secret key',
+      format: String,
+      default: '',
+      env: 'STRIPE_WEBHOOK_SECRET',
+      sensitive: true,
+    }
+  },
+
+  email: {
+    host: {
+      doc: 'SMTP server host',
+      format: String,
+      default: 'smtp.gmail.com',
+      env: 'EMAIL_HOST'
+    },
+    port: {
+      doc: 'SMTP server port',
+      format: 'port',
+      default: 587,
+      env: 'EMAIL_PORT'
+    },
+    secure: {
+      doc: 'Use secure connection (TLS)',
+      format: Boolean,
+      default: false,
+      env: 'EMAIL_SECURE'
+    },
+    auth: {
+      user: {
+        doc: 'SMTP username',
+        format: String,
+        default: '',
+        env: 'EMAIL_USER'
+      },
+      pass: {
+        doc: 'SMTP password',
+        format: String,
+        default: '',
+        env: 'EMAIL_PASS',
+        sensitive: true
+      }
+    },
+    from: {
+      name: {
+        doc: 'Default sender name',
+        format: String,
+        default: 'TransLog API',
+        env: 'EMAIL_FROM_NAME'
+      },
+      address: {
+        doc: 'Default sender email address',
+        format: String,
+        default: 'noreply@translog.com',
+        env: 'EMAIL_FROM_ADDRESS'
       }
     }
   }

@@ -30,7 +30,7 @@ export function errorHandler (
 		message,
 	};
 
-	if (process.env.NODE_ENV !== 'production' && err instanceof Error) {
+	if (config.get('env') !== 'production' && err instanceof Error) {
     payload.data = err.stack;
   }
 

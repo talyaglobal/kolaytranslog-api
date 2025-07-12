@@ -36,7 +36,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"vessel\": \"Sea Explorer\",\n  \"owner\": \"John Doe\",\n  \"amount\": 15000,\n  \"captainNationality\": \"Turkey\",\n  \"captainPassport\": \"TR1234567\",\n  \"purpose\": \"Tourism and leisure sailing\",\n  \"contactPhone\": \"+90 555 123 4567\",\n  \"contactEmail\": \"john.doe@example.com\",\n  \"details\": {\n    \"vesselLength\": \"12.5\",\n    \"entryPort\": \"Bodrum\",\n    \"exitPort\": \"Marmaris\",\n    \"type\": \"yelkenli\",\n    \"flag\": \"Turkey\",\n    \"registrationNumber\": \"TR-BOD-2023-001\",\n    \"entryDate\": \"2024-06-15\",\n    \"exitDate\": \"2024-06-25\"\n  },\n  \"passengers\": [\n    {\n      \"firstName\": \"Jane\",\n      \"lastName\": \"Smith\",\n      \"nationality\": \"United States\",\n      \"passportNumber\": \"US987654321\",\n      \"passportExpiry\": \"2028-12-31\",\n      \"birthDate\": \"1985-03-15\",\n      \"birthPlace\": \"New York\",\n      \"gender\": \"female\",\n      \"passportScan\": {\n        \"filename\": \"jane_passport.pdf\",\n        \"mimetype\": \"application/pdf\",\n        \"size\": 1024000,\n        \"data\": \"JVBERi0xLjQKJcOkw7zDtsO4w6A=\"\n      }\n    },\n    {\n      \"firstName\": \"Mike\",\n      \"lastName\": \"Johnson\",\n      \"nationality\": \"Canada\",\n      \"passportNumber\": \"CA123456789\",\n      \"passportExpiry\": \"2027-08-20\",\n      \"birthDate\": \"1990-07-22\",\n      \"birthPlace\": \"Toronto\",\n      \"gender\": \"male\",\n      \"passportScan\": {\n        \"filename\": \"mike_passport.jpg\",\n        \"mimetype\": \"image/jpeg\",\n        \"size\": 850000,\n        \"data\": \"/9j/4AAQSkZJRgABAQEAYABgAAD=\"\n      }\n    }\n  ],\n  \"captainPassportScan\": {\n    \"filename\": \"captain_passport.pdf\",\n    \"mimetype\": \"application/pdf\",\n    \"size\": 1200000,\n    \"data\": \"JVBERi0xLjQKJcOkw7zDtsO4w6BcL1JlZg==\"\n  },\n  \"insurancePolicy\": {\n    \"filename\": \"insurance_policy.pdf\",\n    \"mimetype\": \"application/pdf\",\n    \"size\": 2048000,\n    \"data\": \"JVBERi0xLjQKJcOkw7zDtsO4w6DDpMO8w7bDuMOgXC9JbnN1cmFuY2U=\"\n  },\n  \"vesselRegistration\": {\n    \"filename\": \"vessel_registration.pdf\",\n    \"mimetype\": \"application/pdf\",\n    \"size\": 1536000,\n    \"data\": \"JVBERi0xLjQKJcOkw7zDtsO4w6DDpMO8w7bDuMOgXC9WZXNzZWw=\"\n  }\n}"
+          "raw": "{\n  \"vesselName\": \"Sea Explorer\",\n  \"vesselType\": \"yelkenli\",\n  \"vesselLength\": 12.5,\n  \"flagCountry\": \"Turkey\",\n  \"vesselRegistrationNumber\": \"TR-BOD-2023-001\",\n  \"manufacturingYear\": 2020,\n  \"enginePower\": \"40 HP\",\n  \"hullMaterial\": \"Fiberglass\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"nationality\": \"Turkey\",\n  \"companyName\": \"Doe Marine Services\",\n  \"passportNumber\": \"TR1234567\",\n  \"phoneNumber\": \"+90 555 123 4567\",\n  \"address\": \"123 Marina Street, Bodrum, Turkey\",\n  \"entryPort\": \"Bodrum\",\n  \"exitPort\": \"Marmaris\",\n  \"entryDate\": \"2024-08-15\",\n  \"exitDate\": \"2024-08-25\",\n  \"tripPurpose\": \"Tourism and leisure sailing\",\n  \"crewCount\": 2,\n  \"passengerCount\": 4,\n  \"emergencyContact\": \"Emergency Contact: +90 555 123 4568\",\n  \"specialRequests\": \"Wheelchair accessible dock needed\",\n  \"insuranceInformation\": \"Comprehensive marine insurance, Policy #123456\",\n  \"previousVisits\": false,\n  \"documents\": [\n    {\n      \"filename\": \"document1.pdf\",\n      \"mimetype\": \"application/pdf\",\n      \"size\": 1536000,\n      \"data\": \"JVBERi0xLjQKJcOkw7zDtsO4w6DDpMO8w7bDuMOgXC9WZXNzZWw=\"\n    },\n    {\n      \"filename\": \"document2.jpg\",\n      \"mimetype\": \"image/jpeg\",\n      \"size\": 2048000,\n      \"data\": \"/9j/4AAQSkZJRgABAQEAYABgAAD=\"\n    },\n    {\n      \"filename\": \"document3.png\",\n      \"mimetype\": \"image/png\",\n      \"size\": 1200000,\n      \"data\": \"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==\"\n    }\n  ]\n}"
         },
         "url": {
           "raw": "{{BASE_URL}}/applications",
@@ -47,7 +47,81 @@
             "applications"
           ]
         },
-        "description": "Create a new application with vessel, owner, and passenger information"
+        "description": "Create a new application with vessel information, owner details, trip information, and optional general documents (no specific labels required)"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Application (No Documents)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"vesselName\": \"Marina Belle\",\n  \"vesselType\": \"motorlu\",\n  \"vesselLength\": 18.2,\n  \"flagCountry\": \"Turkey\",\n  \"vesselRegistrationNumber\": \"TR-ANT-2024-002\",\n  \"manufacturingYear\": 2022,\n  \"firstName\": \"Maria\",\n  \"lastName\": \"Garcia\",\n  \"email\": \"maria.garcia@example.com\",\n  \"nationality\": \"Spain\",\n  \"phoneNumber\": \"+34 666 123 456\",\n  \"entryPort\": \"Antalya\",\n  \"exitPort\": \"Kas\",\n  \"entryDate\": \"2024-09-01\",\n  \"exitDate\": \"2024-09-10\",\n  \"tripPurpose\": \"Vacation cruise\",\n  \"crewCount\": 1,\n  \"passengerCount\": 6,\n  \"previousVisits\": true\n}"
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/applications",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "applications"
+          ]
+        },
+        "description": "Create a new application without any document uploads to test minimal required fields"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Applications",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{BASE_URL}}/applications?page=1&limit=10",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "applications"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Get list of applications with pagination"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Application by ID",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{BASE_URL}}/applications/{{APPLICATION_ID}}",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "applications",
+            "{{APPLICATION_ID}}"
+          ]
+        },
+        "description": "Get a specific application by its ID. Set APPLICATION_ID variable from create response."
       },
       "response": []
     }
@@ -57,6 +131,11 @@
       "key": "BASE_URL",
       "value": "http://localhost:3000",
       "description": "Base URL for the API"
+    },
+    {
+      "key": "APPLICATION_ID",
+      "value": "",
+      "description": "Application ID to be set from create response"
     }
   ],
   "event": [
@@ -92,6 +171,19 @@
           "        const responseJson = pm.response.json();",
           "        pm.expect(responseJson.status).to.eql('success');",
           "    });",
+          "    ",
+          "    // For create application requests, save the application ID",
+          "    if (pm.request.url.path.includes('applications') && pm.request.method === 'POST') {",
+          "        pm.test('Response contains application data', function () {",
+          "            const responseJson = pm.response.json();",
+          "            pm.expect(responseJson.data).to.have.property('id');",
+          "            pm.expect(responseJson.data).to.have.property('document_urls');",
+          "            pm.expect(responseJson.data.document_urls).to.be.an('array');",
+          "            ",
+          "            // Save application ID for subsequent requests",
+          "            pm.collectionVariables.set('APPLICATION_ID', responseJson.data.id);",
+          "        });",
+          "    }",
           "}",
           "",
           "// Test for error responses",
