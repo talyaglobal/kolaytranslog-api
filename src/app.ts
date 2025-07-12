@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
-import { registerRoutes } from '@api/routes';
+import { registerRoutes } from '@api/routes/index';
 import { errorHandler } from '@api/middlewares/error-handler';
 import { notFoundHandler } from '@api/middlewares/not-found';
 import pino from 'pino';
@@ -19,7 +19,21 @@ const swaggerDocument = YAML.load(config.get('swagger.path'));
 const app: Application = express();
 
 // Security
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: ["'self'", "*"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+    },
+  },
+}));
 app.use(cors({ origin: config.get('cors.origins') }));
 app.use(
   rateLimit({
