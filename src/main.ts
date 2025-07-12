@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import './container';
-import app from './app';
+import './container.js';
+import app from './app.js';
 import pino from 'pino';
 import * as dotenv from 'dotenv';
 import path from 'path';
