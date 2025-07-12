@@ -29,7 +29,7 @@ app.use(
 );
 
 // Logging
-app.use(morgan('combined', { stream: { write: (msg) => logger.info(msg.trim()) } }));
+app.use(morgan('combined', { stream: { write: (msg: string) => logger.info(msg.trim()) } }));
 
 // Body parsing
 app.use(express.json());

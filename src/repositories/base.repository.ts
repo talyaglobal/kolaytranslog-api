@@ -12,6 +12,10 @@ export class BaseRepository<T, C, U> {
     return this.model.findUnique({ where: { id } });
   }
 
+  async findFirst(params: { where?: any }): Promise<T | null> {
+    return this.model.findFirst(params);
+  }
+
   async update(id: string, data: U): Promise<T> {
     return this.model.update({ where: { id }, data });
   }

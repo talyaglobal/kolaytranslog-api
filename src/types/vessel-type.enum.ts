@@ -3,5 +3,5 @@ export enum VesselType {
 	MOTORLU = "motorlu",
 	KATAMARAN = "katamaran",
 	YAT = "yat",
-	DIGER = "diğer"
+	DIGER = "diger"
 }

@@ -25,7 +25,7 @@ export class ApplicationController {
   ): Promise<void> {
     try {
       const filters = req.query;
-      const result = await this.applicationService.getAllApplications(filters);
+      const result = await this.applicationService.getAllApplications(filters as any);
 
       const response: ApiResponse<typeof result> = {
         status: 'success',
@@ -52,7 +52,7 @@ export class ApplicationController {
       let documentsWithUploads: any[] = [];
       if (applicationData.documents && applicationData.documents.length > 0) {
         documentsWithUploads = await Promise.all(
-          applicationData.documents.map(async (document) => {
+          applicationData.documents.map(async (document: any) => {
             try {
               const uploadResult = await this.uploadFile(document, 'application-documents');
               return {

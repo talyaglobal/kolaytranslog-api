@@ -169,5 +169,5 @@ enum vessel_type_enum {
   motorlu
   katamaran
   yat
-  di_er     @map("diğer")
+  diger
 }
