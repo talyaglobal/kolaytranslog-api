@@ -7,7 +7,7 @@
       "ES2022",
       "ESNext.Decorators"
     ],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "esModuleInterop": true, // allow default imports from CJS
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true, // speed up compilation
