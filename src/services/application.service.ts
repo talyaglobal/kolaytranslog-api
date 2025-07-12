@@ -220,7 +220,7 @@ export class ApplicationService {
       }
       
       // Get applications with pagination and filtering
-      const applications = await this.applicationRepository.findAll(queryParams).catch(err => console.log(err));
+      const applications = await this.applicationRepository.findAll(queryParams);
       
       // Get total count for pagination info
       const totalCount = await this.applicationRepository.count(where);
