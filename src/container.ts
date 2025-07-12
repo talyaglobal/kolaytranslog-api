@@ -1,4 +1,4 @@
-import { ApplicationRepository, ContactMessageRepository, CountryRepository, PassengerRepository, PaymentDisputeRepository, VesselRepository, WebhookEventRepository } from '@repositories';
+import { ApplicationRepository, ContactMessageRepository, CountryRepository, PassengerRepository, PaymentDisputeRepository, WebhookEventRepository } from '@repositories';
 import { ApplicationService, SupabaseService } from '@services';
 import { CountriesService } from '@services/countries.service';
 import { EmailService } from '@services/email.service';
@@ -19,9 +19,6 @@ container.register<PassengerRepository>('PassengerRepository', {
 });
 container.register<PaymentDisputeRepository>('PaymentDisputeRepository', {
   useClass: PaymentDisputeRepository,
-});
-container.register<VesselRepository>('VesselRepository', {
-  useClass: VesselRepository,
 });
 container.register<WebhookEventRepository>('WebhookEventRepository', {
   useClass: WebhookEventRepository,

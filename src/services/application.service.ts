@@ -18,18 +18,6 @@ export class ApplicationService {
     try {
       logger.info('Creating new application', { vessel: applicationData.vesselName });
       
-      // First, create or find the vessel
-      const vesselData = {
-        name: applicationData.vesselName,
-        type: applicationData.vesselType,
-        length: applicationData.vesselLength,
-        flag: applicationData.flagCountry,
-        registration_number: applicationData.vesselRegistrationNumber || '',
-        manufacturing_year: applicationData.manufacturingYear,
-        engine_power: applicationData.enginePower,
-        hull_material: applicationData.hullMaterial,
-      };
-
       // Extract document URLs from uploaded documents
       const documentUrls: string[] = [];
       if (applicationData.documents && applicationData.documents.length > 0) {
@@ -42,14 +30,17 @@ export class ApplicationService {
 
       // Transform DTO to Prisma schema format
       const applicationInput = {
-        vessels: {
-          connectOrCreate: {
-            where: { 
-              registration_number: vesselData.registration_number || `${applicationData.vesselName}-${Date.now()}`
-            },
-            create: vesselData,
-          },
-        },
+        // Vessel Information
+        vessel_name: applicationData.vesselName,
+        vessel_type: applicationData.vesselType as string,
+        vessel_length: applicationData.vesselLength,
+        flag_country: applicationData.flagCountry,
+        vessel_registration_number: applicationData.vesselRegistrationNumber || null,
+        manufacturing_year: applicationData.manufacturingYear || null,
+        engine_power: applicationData.enginePower || null,
+        hull_material: applicationData.hullMaterial || null,
+        
+        // Captain Information
         captain_name: `${applicationData.firstName} ${applicationData.lastName}`,
         captain_nationality: applicationData.nationality,
         captain_passport: applicationData.passportNumber || '',
@@ -167,20 +158,16 @@ export class ApplicationService {
         }
       }
       
-      // Vessel filters (requires joining with vessels table)
-      if (searchFilters.vesselType || searchFilters.vesselName) {
-        where.vessels = {};
-        
-        if (searchFilters.vesselType) {
-          where.vessels.type = searchFilters.vesselType;
-        }
-        
-        if (searchFilters.vesselName) {
-          where.vessels.name = {
-            contains: searchFilters.vesselName,
-            mode: 'insensitive',
-          };
-        }
+      // Vessel filters
+      if (searchFilters.vesselType) {
+        where.vessel_type = searchFilters.vesselType;
+      }
+      
+      if (searchFilters.vesselName) {
+        where.vessel_name = {
+          contains: searchFilters.vesselName,
+          mode: 'insensitive',
+        };
       }
       
       // Build orderBy clause
@@ -188,7 +175,7 @@ export class ApplicationService {
       
       switch (sortBy) {
         case 'vessel_name':
-          orderBy.vessels = { name: sortOrder };
+          orderBy.vessel_name = sortOrder;
           break;
         case 'captain_name':
           orderBy.captain_name = sortOrder;
@@ -214,10 +201,7 @@ export class ApplicationService {
         orderBy,
       };
       
-      // Include vessels if we're filtering by vessel properties or sorting by vessel fields
-      if (searchFilters.vesselType || searchFilters.vesselName || sortBy === 'vessel_name') {
-        queryParams.include = { vessels: true };
-      }
+      // No need to include vessels since vessel data is now stored directly in applications table
       
       // Get applications with pagination and filtering
       const applications = await this.applicationRepository.findAll(queryParams);

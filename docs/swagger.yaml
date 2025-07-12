@@ -218,7 +218,7 @@ paths:
 
     post:
       summary: Create a new transit log application
-      description: Submit a new application for vessel transit logging. Documents can be uploaded as a general array without specific labels.
+      description: Submit a new application for vessel transit logging. Vessel information is included directly in the application. Documents can be uploaded as a general array without specific labels.
       tags:
         - Applications
       requestBody:
@@ -476,7 +476,7 @@ components:
         manufacturingYear:
           type: integer
           minimum: 1900
-          maximum: 2024
+          maximum: 2025
           description: Manufacturing year (optional)
           example: 2020
         enginePower:
@@ -656,8 +656,7 @@ components:
         - yelkenli
         - motorlu
         - katamaran
-        - yat
-        - diğer
+        - diger
       description: Type of vessel
       example: "motorlu"
 
@@ -778,11 +777,38 @@ components:
           format: date-time
           description: Last update timestamp
           example: "2024-01-01T12:00:00.000Z"
-        vessel_id:
+        
+        # Vessel Information
+        vessel_name:
           type: string
-          format: uuid
-          description: Associated vessel ID
-          example: "550e8400-e29b-41d4-a716-446655440001"
+          description: Vessel name
+          example: "Sea Explorer"
+        vessel_type:
+          $ref: '#/components/schemas/VesselType'
+        vessel_length:
+          type: number
+          description: Vessel length in meters
+          example: 15.5
+        flag_country:
+          type: string
+          description: Flag country
+          example: "Turkish"
+        vessel_registration_number:
+          type: string
+          description: Vessel registration number
+          example: "TR-12345"
+        manufacturing_year:
+          type: integer
+          description: Manufacturing year
+          example: 2020
+        engine_power:
+          type: string
+          description: Engine power
+          example: "300 HP"
+        hull_material:
+          type: string
+          description: Hull material
+          example: "Fiberglass"
         captain_name:
           type: string
           description: Captain name

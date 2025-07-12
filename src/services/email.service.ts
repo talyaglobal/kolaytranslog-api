@@ -4,7 +4,7 @@ import { config } from '@config';
 import { AppError } from '@core/AppError';
 import { HttpStatusCode } from '@core/HttpStatus';
 import logger from '@utils/logger';
-import type { applications, vessels, passengers } from '@prisma/client';
+import type { applications, passengers } from '@prisma/client';
 
 export interface EmailOptions {
   to: string | string[];
@@ -19,7 +19,6 @@ export interface EmailOptions {
 }
 
 export interface ApplicationWithDetails extends applications {
-  vessels: vessels;
   passengers: passengers[];
 }
 
@@ -172,11 +171,11 @@ export class EmailService {
 
         <div style="background-color: #e9ecef; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h2 style="color: #007bff; margin-top: 0;">Vessel Information</h2>
-          <p><strong>Vessel Name:</strong> ${applicationWithDetails.vessels.name}</p>
-          <p><strong>Type:</strong> ${formatVesselType(applicationWithDetails.vessels.type)}</p>
-          <p><strong>Length:</strong> ${applicationWithDetails.vessels.length}m</p>
-          <p><strong>Flag:</strong> ${applicationWithDetails.vessels.flag}</p>
-          <p><strong>Registration Number:</strong> ${applicationWithDetails.vessels.registration_number}</p>
+          <p><strong>Vessel Name:</strong> ${applicationWithDetails.vessel_name}</p>
+          <p><strong>Type:</strong> ${formatVesselType(applicationWithDetails.vessel_type || '')}</p>
+          <p><strong>Length:</strong> ${applicationWithDetails.vessel_length}m</p>
+          <p><strong>Flag:</strong> ${applicationWithDetails.flag_country}</p>
+          <p><strong>Registration Number:</strong> ${applicationWithDetails.vessel_registration_number}</p>
         </div>
 
         <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0;">
@@ -237,11 +236,11 @@ Application Details:
 ${applicationWithDetails.notes ? `- Notes: ${applicationWithDetails.notes}` : ''}
 
 Vessel Information:
-- Name: ${applicationWithDetails.vessels.name}
-- Type: ${formatVesselType(applicationWithDetails.vessels.type)}
-- Length: ${applicationWithDetails.vessels.length}m
-- Flag: ${applicationWithDetails.vessels.flag}
-- Registration Number: ${applicationWithDetails.vessels.registration_number}
+- Name: ${applicationWithDetails.vessel_name}
+- Type: ${formatVesselType(applicationWithDetails.vessel_type || '')}
+- Length: ${applicationWithDetails.vessel_length}m
+- Flag: ${applicationWithDetails.flag_country}
+- Registration Number: ${applicationWithDetails.vessel_registration_number}
 
 Captain Information:
 - Name: ${applicationWithDetails.captain_name}
