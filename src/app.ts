@@ -18,6 +18,9 @@ const swaggerDocument = YAML.load(config.get('swagger.path'));
 
 const app: Application = express();
 
+// Trust proxy (required for rate limiting behind reverse proxy)
+app.set('trust proxy', true);
+
 // Security
 app.use(helmet({
   contentSecurityPolicy: {
